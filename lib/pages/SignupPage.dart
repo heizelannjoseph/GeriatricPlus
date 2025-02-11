@@ -55,20 +55,35 @@ class _SignUpPageState extends State<SignUpPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Signup Successful!")),
         );
+        _nameController.clear();
+        _dobController.clear();
+        _emailController.clear();
+        _mobileController.clear();
+        _passwordController.clear();
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+          (route) => false, // Removes all previous routes
+        );
       } else if (res == -2) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("User already exists. Login instead")),
+        );
+        _nameController.clear();
+        _dobController.clear();
+        _emailController.clear();
+        _mobileController.clear();
+        _passwordController.clear();
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+          (route) => false, // Removes all previous routes
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("An Error Occured")),
         );
       }
-      _nameController.clear();
-      _dobController.clear();
-      _emailController.clear();
-      _mobileController.clear();
-      _passwordController.clear();
     }
   }
 
@@ -216,11 +231,6 @@ class _SignUpPageState extends State<SignUpPage> {
                   child: ElevatedButton(
                     onPressed: () async {
                       await _signUp();
-                      Navigator.pushAndRemoveUntil(
-                        context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
-                        (route) => false, // Removes all previous routes
-                      );
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color(0xFF143055),
