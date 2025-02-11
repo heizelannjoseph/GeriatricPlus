@@ -15,6 +15,7 @@ initializeGlobalVariables() async {
     // initialize settings here
     GlobalVariables().settings = {};
     // initialize notifications here
+    await Future.delayed(Duration(seconds: 2));
     GlobalVariables().isHomePageReady = true;
   } catch (err) {
     print('startup error');

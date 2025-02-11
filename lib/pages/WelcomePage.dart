@@ -17,11 +17,11 @@ class _WelcomePageState extends State<WelcomePage> {
 
   void _simulateLoading() async {
     // Simulate a loading delay (e.g., fetching data, initializing services)
-    await Future.delayed(Duration(seconds: 3));
+    await Future.delayed(Duration(seconds: 2));
 
     // Navigate to the DashboardPage after loading
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => DashboardScreen()),
+      MaterialPageRoute(builder: (context) => LoginPage()),
     );
   }
 
