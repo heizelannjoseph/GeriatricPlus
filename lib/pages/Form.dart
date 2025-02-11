@@ -348,7 +348,6 @@ class _CustomFormInputState extends State<CustomFormInput> {
                                     endDate.month == now.month &&
                                     endDate.year == now.year;
                                 if (isInRange || isStartToday || isEndToday) {
-                                  print('YEA ITS IN RANGE');
                                   TimeOfDay currTime = TimeOfDay.now();
                                   print(
                                       '${currTime.hour} ${_selectedTime.hour} ${currTime.minute} ${_selectedTime.minute}');
@@ -359,7 +358,7 @@ class _CustomFormInputState extends State<CustomFormInput> {
                                               _selectedTime.minute));
                                   if (isBefore) {
                                     // create a one shot notification
-                                    print('YES ITS BEFORE');
+
                                     await AndroidAlarmManager.oneShotAt(
                                         DateTime(
                                             now.year,
@@ -451,8 +450,6 @@ class _CustomFormInputState extends State<CustomFormInput> {
     TimeOfDay? pickedTime = await showTimePicker(
         context: context, initialTime: _selectedTime // Default to current time
         );
-
-    print('Picked Time is: ${pickedTime}');
 
     if (pickedTime != null) {
       setState(() {

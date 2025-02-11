@@ -24,7 +24,6 @@ class _LoginPageState extends State<LoginPage> {
 
   _login() async {
     if (_formKey.currentState!.validate()) {
-      print("Going to give loginItem");
       var loginItem = {
         'email': _emailController.text,
         'password': _passwordController.text
@@ -124,7 +123,6 @@ class _LoginPageState extends State<LoginPage> {
                   width: MediaQuery.of(context).size.width / 2,
                   child: ElevatedButton(
                     onPressed: () async {
-                      print('Going to Login');
                       await _login();
                     },
                     style: ElevatedButton.styleFrom(

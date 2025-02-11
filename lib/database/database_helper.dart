@@ -30,7 +30,6 @@ class DBHelper {
       pathToDB = '/storage/emulated/0/Android/data/plus.geriatric/files';
     }
     String path = join(pathToDB, dbName);
-    print(path);
     var db = await openDatabase(path, version: 1, onCreate: _createDatabase);
     return db;
   }
