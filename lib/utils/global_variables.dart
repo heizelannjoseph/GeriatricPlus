@@ -12,4 +12,5 @@ class GlobalVariables {
   bool isHomePageReady = false;
   bool isInitializationError = false;
   Map<String, dynamic> settings = {};
+  int userId = 0;
 }

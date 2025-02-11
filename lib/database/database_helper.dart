@@ -5,6 +5,9 @@ import 'dart:io' as io;
 import 'dart:core';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/material.dart';
+import 'package:crypto/crypto.dart';
+import 'dart:convert';
+import 'package:dashboard_screen/utils/global_variables.dart';
 
 class DBHelper {
   static Database? _db;
@@ -51,6 +54,7 @@ class DBHelper {
     await db.execute("""
   CREATE TABLE medicine_reminders (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INT NOT NULL,
     title VARCHAR NOT NULL,
     type VARCHAR NOT NULL,
     time TIME NOT NULL,
@@ -58,21 +62,40 @@ class DBHelper {
     end_date DATE NOT NULL,
     color_id INT NOT NULL,
     description TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY(user_id) REFERENCES users(id)
 )""");
     await db.execute("""
   CREATE TABLE completed_reminders (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INT NOT NULL,
     created_date DATE NOT NULL,
     reminder_id INTEGER,
     is_done BOOLEAN NOT NULL DEFAULT 1,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY(reminder_id) REFERENCES medicine_reminders(id)
+    FOREIGN KEY(reminder_id) REFERENCES medicine_reminders(id),
+    FOREIGN KEY(user_id) REFERENCES users(id)
+)""");
+    await db.execute("""
+  CREATE TABLE users(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR NOT NULL,
+    email VARCHAR NOT NULL,
+    mobile VARCHAR NOT NULL,
+    date_of_birth VARCHAR NOT NULL,
+    password VARCHAR NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )""");
   }
 
   String formatTimeOfDay(TimeOfDay time) {
     return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}:00';
+  }
+
+  String hashString(String input) {
+    var bytes = utf8.encode(input); // Convert string to bytes
+    var digest = sha256.convert(bytes); // Apply SHA-256 hash
+    return digest.toString(); // Convert to hex string
   }
 
   Future<int> insertReminder(var reminderItem) async {
@@ -91,13 +114,14 @@ class DBHelper {
       await db;
       await _db!.rawQuery(""" 
           INSERT INTO 
-          medicine_reminders(title,type,time,start_date,end_date,color_id,description) 
+          medicine_reminders(title,type,time,start_date,end_date,color_id,description,user_id) 
           VALUES("${reminderItem['title']}","${reminderItem['type']}",
           "${formatTimeOfDay(reminderItem['time'])}",
           "${reminderItem['startDate']}",
           "${reminderItem['endDate']}",
           "${reminderItem['color']}",
-          "${reminderItem['description']}"
+          "${reminderItem['description']}",
+          ${GlobalVariables().userId}
           )  
         """);
       return 0;
@@ -127,7 +151,8 @@ class DBHelper {
           FROM medicine_reminders m
           LEFT JOIN completed_reminders c
           ON c.reminder_id = m.id AND c.created_date = "${formattedDate}"
-          WHERE "${formattedDate}" >= m.start_date AND "${formattedDate}" <= m.end_date) AS t
+          WHERE "${formattedDate}" >= m.start_date AND "${formattedDate}" <= m.end_date
+           AND m.user_id = ${GlobalVariables().userId}) AS t
           WHERE created_date = "${formattedDate}"
         """);
 
@@ -155,7 +180,63 @@ class DBHelper {
     await db;
     String _date = date.toIso8601String().split('T')[0];
     await _db!.rawQuery(
-        """insert into completed_reminders(created_date, reminder_id, is_done) 
-        VALUES ("${_date}",${id}, 1)""");
+        """insert into completed_reminders(created_date, reminder_id, is_done, user_id) 
+        VALUES ("${_date}",${id}, 1,${GlobalVariables().userId})""");
+  }
+
+  Future<int> insertUser(var userItem) async {
+    // userItem {} of the form:
+    // {
+    //   'name': name,
+    //   'date_of_birth': dateOfBirth,
+    //   'email': email,
+    //   'mobile': mobile,
+    //   'password': password
+    //  }
+    await db;
+    try {
+      await _db!.rawQuery(
+          """insert into users(name,email,mobile,date_of_birth,password) 
+        VALUES ("${userItem['name']}","${userItem['email']}",
+        "${userItem['mobile']}","${userItem['date_of_birth']}",
+        "${hashString(userItem['password'])}")""");
+      return 1;
+    } catch (e) {
+      return -1;
+    }
+  }
+
+  Future<String> login(var loginItem) async {
+    // loginItem {} of the form:
+    // {
+    //   'email': name,
+    //   'password': password
+    //  }
+    await db;
+    String output = "Login Success";
+    try {
+      List res = await _db!.rawQuery("""select email, password, id 
+              from users 
+              where email = "${loginItem['email']}" 
+              limit 1 
+            """);
+      print('Insidesss');
+      print(res);
+      if (res.length <= 0) {
+        return "User not Found";
+      }
+      String password = res[0]['password'];
+      String hashedInputPassword = hashString(loginItem['password']);
+      if (password != hashedInputPassword) {
+        return "Incorrect Password";
+      }
+      // Set Global Variable
+      int userId = res[0]['id'];
+      GlobalVariables().userId = userId;
+      return output;
+    } catch (e) {
+      print(e);
+      return "Something went wrong";
+    }
   }
 }

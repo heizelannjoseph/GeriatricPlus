@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/material.dart';
 import 'package:dashboard_screen/pages/HomePage.dart';
 import 'package:dashboard_screen/pages/Form.dart';
+import 'package:dashboard_screen/pages/LoginPage.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({
@@ -35,44 +36,85 @@ class _DashboardScreenState extends State<DashboardScreen> {
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0.0,
-        title: Container(
+        leading: IconButton(
+          icon: Icon(
+            Icons.person,
+            size: 20,
+            color: Colors.black,
+          ), // Custom drawer icon
+          onPressed: () {
+            print('Hi'); // Open the drawer manually
+          },
+        ),
+        title: Center(
+            child: Container(
+          alignment: Alignment.center,
           width: 400,
           color: Colors.white,
           child: GestureDetector(
-              onDoubleTap: () async {
-                String msg = 'Successfully reversed app init state';
-                try {
-                  // code for app start state if any
-                } catch (e) {
-                  msg = '${e}';
-                }
-                final snackBar = SnackBar(
-                    duration: Duration(seconds: 3), content: Text('${msg}'));
-                ScaffoldMessenger.of(context).showSnackBar(snackBar);
-              },
               child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                          height: MediaQuery.of(context).size.height / 6,
-                          width: MediaQuery.of(context).size.width / 2,
-                          decoration: BoxDecoration(
-                              color: Colors.white,
-                              image: DecorationImage(
-                                  fit: BoxFit.fill,
-                                  image: AssetImage(
-                                      'assets/images/geriatricplus_title.jpg')))),
-                    ],
-                  ),
+                  Container(
+                      height: MediaQuery.of(context).size.height / 6,
+                      width: MediaQuery.of(context).size.width / 2,
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          image: DecorationImage(
+                              fit: BoxFit.fill,
+                              image: AssetImage(
+                                  'assets/images/geriatricplus_title.jpg')))),
                 ],
-              )),
-        ),
+              ),
+            ],
+          )),
+        )),
       ),
+      drawer: Drawer(
+          child: ListView(padding: EdgeInsets.zero, children: [
+        DrawerHeader(
+          decoration: BoxDecoration(
+            color: Colors.blueGrey,
+            // image: DecorationImage(
+            //     fit: BoxFit.fill,
+            //     image: AssetImage('assets/images/fullmoon.jpg'))
+          ),
+          child: Container(),
+        ),
+        SizedBox(
+          height: 5,
+        ),
+        ListTile(
+          leading: Icon(Icons.person, color: Colors.black),
+          title: const Text('Account', style: TextStyle(fontSize: 20)),
+          onTap: () async {
+            // var colorObject = await dbHelper!.getDaysToHighlight();
+            // Navigator.push(
+            //     context,
+            //     MaterialPageRoute(
+            //         builder: (context) => CalendarPage(
+            //               highlightObject: colorObject,
+            //             )));
+          },
+        ),
+        SizedBox(
+          height: 5,
+        ),
+        ListTile(
+          leading: Icon(Icons.logout, color: Colors.black),
+          title: const Text('Logout', style: TextStyle(fontSize: 20)),
+          onTap: () async {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => LoginPage()),
+            );
+          },
+        )
+      ])),
       body: _pages.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         elevation: 0,
