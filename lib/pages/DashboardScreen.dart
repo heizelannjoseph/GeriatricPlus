@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:dashboard_screen/pages/HomePage.dart';
 import 'package:dashboard_screen/pages/Form.dart';
 import 'package:dashboard_screen/pages/LoginPage.dart';
+import 'package:dashboard_screen/pages/AccountPage.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({
@@ -31,90 +32,59 @@ class _DashboardScreenState extends State<DashboardScreen> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
+    double w = size.width;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0.0,
-        leading: IconButton(
-          icon: Icon(
-            Icons.person,
-            size: 20,
-            color: Colors.black,
-          ), // Custom drawer icon
-          onPressed: () {
-            print('Hi'); // Open the drawer manually
-          },
-        ),
-        title: Center(
+        leading: GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => AccountInformationPage()));
+            },
             child: Container(
-          alignment: Alignment.center,
-          width: 400,
-          color: Colors.white,
-          child: GestureDetector(
-              child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
-                      height: MediaQuery.of(context).size.height / 6,
-                      width: MediaQuery.of(context).size.width / 2,
-                      decoration: BoxDecoration(
-                          color: Colors.white,
-                          image: DecorationImage(
-                              fit: BoxFit.fill,
-                              image: AssetImage(
-                                  'assets/images/geriatricplus_title.jpg')))),
-                ],
+              width: w / 15,
+              child: Icon(
+                Icons.person,
+                color: Color(0xFF143055),
+                size: 30,
               ),
-            ],
-          )),
-        )),
+            )),
+        title: Row(children: [
+          SizedBox(width: w / 14),
+          Center(
+              child: Container(
+            width: MediaQuery.of(context).size.width / 2,
+            color: Colors.white,
+            child: GestureDetector(
+                child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                        height: MediaQuery.of(context).size.height / 6,
+                        width: MediaQuery.of(context).size.width / 2,
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            image: DecorationImage(
+                                fit: BoxFit.fill,
+                                image: AssetImage(
+                                    'assets/images/geriatricplus_title.jpg')))),
+                  ],
+                ),
+              ],
+            )),
+          ))
+        ]),
       ),
-      drawer: Drawer(
-          child: ListView(padding: EdgeInsets.zero, children: [
-        DrawerHeader(
-          decoration: BoxDecoration(
-            color: Colors.blueGrey,
-            // image: DecorationImage(
-            //     fit: BoxFit.fill,
-            //     image: AssetImage('assets/images/fullmoon.jpg'))
-          ),
-          child: Container(),
-        ),
-        SizedBox(
-          height: 5,
-        ),
-        ListTile(
-          leading: Icon(Icons.person, color: Colors.black),
-          title: const Text('Account', style: TextStyle(fontSize: 20)),
-          onTap: () async {
-            // var colorObject = await dbHelper!.getDaysToHighlight();
-            // Navigator.push(
-            //     context,
-            //     MaterialPageRoute(
-            //         builder: (context) => CalendarPage(
-            //               highlightObject: colorObject,
-            //             )));
-          },
-        ),
-        SizedBox(
-          height: 5,
-        ),
-        ListTile(
-          leading: Icon(Icons.logout, color: Colors.black),
-          title: const Text('Logout', style: TextStyle(fontSize: 20)),
-          onTap: () async {
-            Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (context) => LoginPage()),
-            );
-          },
-        )
-      ])),
+      drawer: Drawer(child: null),
       body: _pages.elementAt(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(
         elevation: 0,

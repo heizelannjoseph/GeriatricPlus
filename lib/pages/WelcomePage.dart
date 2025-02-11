@@ -33,8 +33,10 @@ class _WelcomePageState extends State<WelcomePage> {
 
     if (shouldGoToDashboard) {
       WidgetsBinding.instance?.addPostFrameCallback((_) {
-        Navigator.of(context).pushReplacement(
+        Navigator.pushAndRemoveUntil(
+          context,
           MaterialPageRoute(builder: (context) => LoginPage()),
+          (route) => false, // Removes all previous routes
         );
       });
     }

@@ -195,6 +195,15 @@ class DBHelper {
     //  }
     await db;
     try {
+      // [TODO] Check Email Existence
+      List res = await _db!.rawQuery("""select *  
+              from users 
+              where email = "${userItem['email']}" 
+              limit 1 
+            """);
+      if (res.length > 0) {
+        return -2;
+      }
       await _db!.rawQuery(
           """insert into users(name,email,mobile,date_of_birth,password) 
         VALUES ("${userItem['name']}","${userItem['email']}",
@@ -206,6 +215,19 @@ class DBHelper {
     }
   }
 
+  int calculateAge(DateTime dateOfBirth) {
+    DateTime today = DateTime.now();
+    int age = today.year - dateOfBirth.year;
+
+    // Adjust age if the birthday hasn't occurred yet this year
+    if (today.month < dateOfBirth.month ||
+        (today.month == dateOfBirth.month && today.day < dateOfBirth.day)) {
+      age--;
+    }
+
+    return age;
+  }
+
   Future<String> login(var loginItem) async {
     // loginItem {} of the form:
     // {
@@ -215,13 +237,11 @@ class DBHelper {
     await db;
     String output = "Login Success";
     try {
-      List res = await _db!.rawQuery("""select email, password, id 
+      List res = await _db!.rawQuery("""select *  
               from users 
               where email = "${loginItem['email']}" 
               limit 1 
             """);
-      print('Insidesss');
-      print(res);
       if (res.length <= 0) {
         return "User not Found";
       }
@@ -232,7 +252,22 @@ class DBHelper {
       }
       // Set Global Variable
       int userId = res[0]['id'];
+      String dateOfBirth = res[0]['date_of_birth'];
+      String age = "Not Available";
+      try {
+        DateTime dateTime = DateTime.parse(dateOfBirth);
+        age = "${calculateAge(dateTime)}";
+      } catch (e) {
+        print("unable to parse error");
+      }
       GlobalVariables().userId = userId;
+      GlobalVariables().userData = {
+        'name': "${res[0]['name']}",
+        'mobile': "${res[0]['mobile']}",
+        'email': "${res[0]['email']}",
+        'date_of_birth': "${res[0]['date_of_birth']}",
+        'age': "${age}"
+      };
       return output;
     } catch (e) {
       print(e);

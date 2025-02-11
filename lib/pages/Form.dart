@@ -324,8 +324,6 @@ class _CustomFormInputState extends State<CustomFormInput> {
                                 'color': selectedColorId,
                                 'description': comment
                               };
-                              print("This is the input");
-                              print(objectMap);
 
                               int res =
                                   await dbHelper!.insertReminder(objectMap);

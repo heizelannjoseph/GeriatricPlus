@@ -55,6 +55,10 @@ class _SignUpPageState extends State<SignUpPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("Signup Successful!")),
         );
+      } else if (res == -2) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("User already exists. Login instead")),
+        );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text("An Error Occured")),
@@ -82,9 +86,21 @@ class _SignUpPageState extends State<SignUpPage> {
           SizedBox(
             height: MediaQuery.of(context).size.width / 10,
           ),
+          Container(
+              height: MediaQuery.of(context).size.height / 8,
+              width: MediaQuery.of(context).size.width / 1.5,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  image: DecorationImage(
+                      fit: BoxFit.fill,
+                      image: AssetImage(
+                          'assets/images/geriatricplus_title_cropped.jpg')))),
           Text(
-            'SIGN-UP',
-            style: TextStyle(fontSize: 24, fontWeight: FontWeight.w900),
+            'Sign up',
+            style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.w900,
+                color: Color(0xFF143055)),
           ),
           SizedBox(
             height: MediaQuery.of(context).size.width / 10,
@@ -200,8 +216,10 @@ class _SignUpPageState extends State<SignUpPage> {
                   child: ElevatedButton(
                     onPressed: () async {
                       await _signUp();
-                      Navigator.of(context).pushReplacement(
+                      Navigator.pushAndRemoveUntil(
+                        context,
                         MaterialPageRoute(builder: (context) => LoginPage()),
+                        (route) => false, // Removes all previous routes
                       );
                     },
                     style: ElevatedButton.styleFrom(
