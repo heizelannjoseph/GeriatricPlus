@@ -1,3 +1,4 @@
+import 'package:dashboard_screen/main.dart';
 import 'package:flutter/material.dart';
 import 'package:dashboard_screen/pages/LoginPage.dart';
 import 'package:dashboard_screen/utils/global_variables.dart';
@@ -76,6 +77,7 @@ class AccountInformationPage extends StatelessWidget {
             height: 50,
             child: ElevatedButton(
               onPressed: () async {
+                await dbHelper.logout();
                 Navigator.pushAndRemoveUntil(
                   context,
                   MaterialPageRoute(builder: (context) => LoginPage()),

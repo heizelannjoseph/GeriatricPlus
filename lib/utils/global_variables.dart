@@ -9,6 +9,7 @@ class GlobalVariables {
 
   // Define your global variables here
   bool showLogoScreen = false;
+  bool isLoggedIn = false;
   bool isHomePageReady = false;
   bool isInitializationError = false;
   Map<String, dynamic> settings = {};

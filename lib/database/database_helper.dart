@@ -97,6 +97,40 @@ class DBHelper {
     return digest.toString(); // Convert to hex string
   }
 
+  Future<int> setUserGlobalState(int userId) async {
+    await db;
+    try {
+      List res = await _db!.rawQuery("""select *  
+              from users 
+              where id = ${userId}  
+              limit 1 
+            """);
+      String dateOfBirth = res[0]['date_of_birth'];
+      String age = "Not Available";
+      try {
+        DateTime dateTime = DateTime.parse(dateOfBirth);
+        age = "${calculateAge(dateTime)}";
+      } catch (e) {
+        print("unable to parse error");
+      }
+      GlobalVariables().userId = userId;
+      GlobalVariables().userData = {
+        'name': "${res[0]['name']}",
+        'mobile': "${res[0]['mobile']}",
+        'email': "${res[0]['email']}",
+        'date_of_birth': "${res[0]['date_of_birth']}",
+        'age': "${age}"
+      };
+      return 1;
+    } catch (e) {
+      return -1;
+    }
+  }
+
+  Future<void> logout() async {
+    await removeFromCache('loggedUser');
+  }
+
   Future<int> insertReminder(var reminderItem) async {
     // reminderItem {} of the form:
     // {
@@ -267,6 +301,8 @@ class DBHelper {
         'date_of_birth': "${res[0]['date_of_birth']}",
         'age': "${age}"
       };
+      print("saving to caache, user: ${userId}");
+      await saveToCache('loggedUser', '${userId}');
       return output;
     } catch (e) {
       print(e);

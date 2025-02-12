@@ -20,23 +20,40 @@ class _WelcomePageState extends State<WelcomePage> {
     await Future.delayed(Duration(seconds: 2));
 
     // Navigate to the DashboardPage after loading
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => LoginPage()),
-    );
+    if (GlobalVariables().isLoggedIn) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => DashboardScreen()),
+        (route) => false,
+      );
+    } else {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => LoginPage()),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    bool homePageReady = GlobalVariables().isHomePageReady;
     bool shouldGoToDashboard =
-        GlobalVariables().isHomePageReady; // Example condition
+        GlobalVariables().isLoggedIn; // Example condition
     bool isInitializationError = GlobalVariables().isInitializationError;
 
-    if (shouldGoToDashboard) {
+    if (homePageReady && shouldGoToDashboard) {
+      WidgetsBinding.instance?.addPostFrameCallback((_) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => DashboardScreen()),
+          (route) => false,
+        );
+      });
+    } else if (homePageReady) {
       WidgetsBinding.instance?.addPostFrameCallback((_) {
         Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => LoginPage()),
-          (route) => false, // Removes all previous routes
+          (route) => false,
         );
       });
     }
