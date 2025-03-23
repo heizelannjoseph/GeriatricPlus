@@ -15,7 +15,7 @@ void showNotificationForMedicine() {
   final int isolateId = Isolate.current.hashCode;
   nService.sendNotification('Its time to have your medicine',
       'Time: ${now.hour}:${now.minute}:${now.second}',
-      id: '112', name: 'medicine');
+      id: '112', name: 'medicine', sound: RawResourceAndroidNotificationSound('medicine_reminder'));
 }
 
 @pragma('vm:entry-point')

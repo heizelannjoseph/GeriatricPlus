@@ -12,6 +12,9 @@ NotificationsService notificationsService = NotificationsService();
 DBHelper dbHelper = DBHelper();
 
 askPermissions() async {
+  if (!(await Permission.notification.status.isGranted)) {
+    await Permission.notification.request();
+  }
   if (!(await Permission.phone.status.isGranted)) {
     await Permission.phone.request();
   }

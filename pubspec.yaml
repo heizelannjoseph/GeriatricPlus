@@ -62,9 +62,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
-    - assets/sound/medicine_reminder.mp3
     - assets/medicine_reminder.mp3
-    - assets/sound/normal_reminder.mp3
     - assets/normal_reminder.mp3
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

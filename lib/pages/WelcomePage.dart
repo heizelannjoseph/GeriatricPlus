@@ -12,19 +12,20 @@ class _WelcomePageState extends State<WelcomePage> {
   @override
   void initState() {
     super.initState();
-    _simulateLoading();
+    _navigateAfterDelay();
   }
 
-  void _simulateLoading() async {
-    // Simulate a loading delay (e.g., fetching data, initializing services)
-    await Future.delayed(Duration(seconds: 2));
+  void _navigateAfterDelay() async {
+    // Wait for 3 seconds
+    await Future.delayed(Duration(seconds: 3));
 
-    // Navigate to the DashboardPage after loading
+    // Navigate to the appropriate page based on login status
+    print("Login status - ${GlobalVariables().isLoggedIn}");
     if (GlobalVariables().isLoggedIn) {
       Navigator.pushAndRemoveUntil(
         context,
         MaterialPageRoute(builder: (context) => DashboardScreen()),
-        (route) => false,
+            (route) => false,
       );
     } else {
       Navigator.of(context).pushReplacement(
@@ -35,43 +36,24 @@ class _WelcomePageState extends State<WelcomePage> {
 
   @override
   Widget build(BuildContext context) {
-    bool homePageReady = GlobalVariables().isHomePageReady;
-    bool shouldGoToDashboard =
-        GlobalVariables().isLoggedIn; // Example condition
-    bool isInitializationError = GlobalVariables().isInitializationError;
-
-    if (homePageReady && shouldGoToDashboard) {
-      WidgetsBinding.instance?.addPostFrameCallback((_) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => DashboardScreen()),
-          (route) => false,
-        );
-      });
-    } else if (homePageReady) {
-      WidgetsBinding.instance?.addPostFrameCallback((_) {
-        Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => LoginPage()),
-          (route) => false,
-        );
-      });
-    }
     return Scaffold(
       body: Center(
-          child: Container(
-        color: Colors.white,
-        child: DrawerHeader(
-          decoration: BoxDecoration(
+        child: Container(
+          color: Colors.white,
+          child: DrawerHeader(
+            decoration: BoxDecoration(
               color: Colors.white,
               image: DecorationImage(
-                  fit: BoxFit.fitWidth,
-                  image: AssetImage('assets/images/geriatricplus_title.jpg'))),
-          child: !isInitializationError
-              ? Container()
-              : Center(child: Text('An Error Occured')),
+                fit: BoxFit.fitWidth,
+                image: AssetImage('assets/images/geriatricplus_title.jpg'),
+              ),
+            ),
+            child: GlobalVariables().isInitializationError
+                ? Center(child: Text('An Error Occurred'))
+                : Container(),
+          ),
         ),
-      )),
+      ),
     );
   }
 }

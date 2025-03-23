@@ -94,6 +94,11 @@ class DBHelper {
     password VARCHAR NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )""");
+
+    await db.execute("""
+      insert into users(id, name, email, mobile,date_of_birth,password)
+      values(1, "Super User", "su@gmail.com", "9995559991", "1975-01-01", "382132701c4733c3402706cfdd3c8fc7f41f80a88dce5428d145259a41c5f12f")
+   """);
   }
 
   String formatTimeOfDay(TimeOfDay time) {
@@ -123,12 +128,16 @@ class DBHelper {
         print("unable to parse error");
       }
       GlobalVariables().userId = userId;
+      String emName = res[0]['emergency_contact_name'] != null? res[0]['emergency_contact_name']: "";
+      String emNum = res[0]['emergency_contact_number']!= null? res[0]['emergency_contact_number']: "";
       GlobalVariables().userData = {
         'name': "${res[0]['name']}",
         'mobile': "${res[0]['mobile']}",
         'email': "${res[0]['email']}",
         'date_of_birth': "${res[0]['date_of_birth']}",
-        'age': "${age}"
+        'age': "${age}",
+        'emergency_contact_name': emName,
+        'emergency_contact_number': emNum
       };
       return 1;
     } catch (e) {
