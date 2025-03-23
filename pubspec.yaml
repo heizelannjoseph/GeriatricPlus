@@ -33,6 +33,11 @@ dependencies:
   android_alarm_manager_plus: ^2.1.0
   snackbar: ^1.0.2
   shared_preferences: ^2.0.16
+  contacts_service: ^0.6.3
+  permission_handler: ^10.0.0
+  url_launcher: ^6.1.0
+  flutter_sms: ^2.3.3
+  geolocator: ^9.0.2
 
 dev_dependencies:
   flutter_test:
@@ -57,6 +62,10 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/sound/medicine_reminder.mp3
+    - assets/medicine_reminder.mp3
+    - assets/sound/normal_reminder.mp3
+    - assets/normal_reminder.mp3
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
   # For details regarding adding assets from package dependencies, see

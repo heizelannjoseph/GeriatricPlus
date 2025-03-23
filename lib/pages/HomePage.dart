@@ -164,6 +164,7 @@ class _HomePageState extends State<HomePage> {
                                     description: reminder['description'],
                                     title: reminder['title'],
                                     time: reminder['time'],
+                                    typeId: reminder['remType'],
                                     colorId: reminder['color_id'],
                                     id: reminder['id'],
                                     isComplete: reminder['is_done'],
@@ -205,6 +206,7 @@ class ReminderBox extends StatefulWidget {
   final String description;
   final int colorId;
   final int isComplete;
+  final int typeId;
   final int id;
 
   const ReminderBox(
@@ -212,6 +214,7 @@ class ReminderBox extends StatefulWidget {
       required this.time,
       required this.description,
       required this.colorId,
+        required this.typeId,
       required this.id,
       required this.isComplete});
 
@@ -282,6 +285,10 @@ class _ReminderBoxState extends State<ReminderBox> {
                       color: Colors.white,
                     ),
                   ),
+                  const SizedBox(height: 12),
+                  Container(
+                    child: widget.typeId == 0? Icon(Icons.medical_information) : Icon(Icons.auto_graph_sharp),
+                  )
                 ],
               ),
             ),

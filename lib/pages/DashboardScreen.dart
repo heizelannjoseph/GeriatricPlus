@@ -5,6 +5,7 @@ import 'package:dashboard_screen/pages/HomePage.dart';
 import 'package:dashboard_screen/pages/Form.dart';
 import 'package:dashboard_screen/pages/LoginPage.dart';
 import 'package:dashboard_screen/pages/AccountPage.dart';
+import 'package:dashboard_screen/utils/global_variables.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({
@@ -54,10 +55,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
             )),
         title: Row(children: [
-          SizedBox(width: w / 14),
+          SizedBox(width: 10),
           Center(
               child: Container(
-            width: MediaQuery.of(context).size.width / 2,
+            width: MediaQuery.of(context).size.width / 2 - 10,
             color: Colors.white,
             child: GestureDetector(
                 child: Row(
@@ -81,7 +82,58 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
               ],
             )),
-          ))
+          )),
+          SizedBox(width: 10),
+          GestureDetector(
+              onTap: () async {
+                String? num = GlobalVariables().userData['emergency_contact_number'];
+                if(num != null && num.length >= 10) {
+                  await dbHelper!.phoneCall(num);
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Emergency contact not yet added')),
+                  );
+                }
+              },
+              child: Container(
+                width: w / 15,
+                child: Icon(
+                  Icons.phone,
+                  color: Colors.red,
+                  size: 30,
+                ),
+              )),
+          SizedBox(width: 20,),
+          GestureDetector(
+              onTap: () async {
+                String? num = GlobalVariables().userData['emergency_contact_number'];
+                if(num != null && num.length >= 10) {
+                  print("Valid");
+                  String name = GlobalVariables().userData['name'] ?? "";
+                  int res = await dbHelper!.sendLocationSMS([num], name);
+                  if (res == 1) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Success! Message Queued')),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('An Error Occured')),
+                    );
+                  }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Emergency contact not yet added')),
+                  );
+                }
+              },
+              child: Container(
+                width: w / 15,
+                child: Icon(
+                  Icons.emergency_share,
+                  color: Colors.red,
+                  size: 30,
+                ),
+              )),
         ]),
       ),
       drawer: Drawer(child: null),

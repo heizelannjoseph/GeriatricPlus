@@ -4,14 +4,31 @@ import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:dashboard_screen/services/notification_service.dart';
 import 'package:dashboard_screen/utils/global_variables.dart';
 import 'package:dashboard_screen/database/database_helper.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 String defaultNotificationId = '7e91aed5-0286-44b8-a6ee-cb00b0f77caf';
 
 NotificationsService notificationsService = NotificationsService();
 DBHelper dbHelper = DBHelper();
 
-// write code to initialize notifications
+askPermissions() async {
+  if (!(await Permission.phone.status.isGranted)) {
+    await Permission.phone.request();
+  }
+  var smsStatus = await Permission.sms.status;
+  var locationStatus = await Permission.location.status;
+  if (!smsStatus.isGranted) {
+    await Permission.sms.request();
+  }
+  if (!locationStatus.isGranted) {
+    await Permission.location.request();
+  }
+  if (!(await Permission.contacts.status.isGranted)) {
+    await Permission.contacts.request();
+  }
+}
 
+// write code to initialize notifications
 initializeGlobalVariables() async {
   try {
     // initialize settings here
@@ -48,6 +65,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await AndroidAlarmManager.initialize();
   runApp(MyApp());
+  await askPermissions();
   notificationsService.initializeNotifications();
   await initializeGlobalVariables();
 }

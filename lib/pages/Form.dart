@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'dart:isolate';
 import 'package:dashboard_screen/services/notification_service.dart';
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 NotificationsService nService = NotificationsService();
 
@@ -15,6 +16,15 @@ void showNotificationForMedicine() {
   nService.sendNotification('Its time to have your medicine',
       'Time: ${now.hour}:${now.minute}:${now.second}',
       id: '112', name: 'medicine');
+}
+
+@pragma('vm:entry-point')
+void showNotificationForReminder() {
+  final DateTime now = DateTime.now();
+  final int isolateId = Isolate.current.hashCode;
+  nService.sendNotification('You have a reminder scheduled for now',
+      'Time: ${now.hour}:${now.minute}:${now.second}',
+      id: '113', name: 'reminder', sound: RawResourceAndroidNotificationSound('normal_reminder') );
 }
 
 class CustomFormInput extends StatefulWidget {
@@ -37,6 +47,7 @@ class _CustomFormInputState extends State<CustomFormInput> {
   DateTime startDate = DateTime.now();
   DateTime endDate = DateTime.now();
   String selectedDropDownValue = 'DAILY';
+  String selectedRemTypeDropDownValue = 'MEDICINE';
 
   String comment = '';
   String title = '';
@@ -97,10 +108,10 @@ class _CustomFormInputState extends State<CustomFormInput> {
             height: 20,
           ),
           Row(children: [
-            Text(
+            Container(width: 100, child: Text(
               "Reminder Type",
               style: TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
-            ),
+            ),),
             SizedBox(
               width: MediaQuery.of(context).size.width / 6,
             ),
@@ -138,6 +149,46 @@ class _CustomFormInputState extends State<CustomFormInput> {
           SizedBox(
             height: 20,
           ),
+          Row(children: [
+            Container(width: 100, child: Text(
+              "Notification Type",
+              style: TextStyle(fontSize: 17, fontWeight: FontWeight.w900),
+            ),),
+            SizedBox(
+              width: MediaQuery.of(context).size.width / 6,
+            ),
+            Container(
+              alignment: Alignment.center,
+              width: MediaQuery.of(context).size.width / 3,
+              decoration: BoxDecoration(
+                  border: Border.all(width: 0.5),
+                  borderRadius: BorderRadius.circular(25.0)),
+              child: Container(
+                padding: EdgeInsets.all(10),
+                child: DropdownButton<String>(
+                  value: selectedRemTypeDropDownValue,
+                  underline: SizedBox(),
+                  icon: const Icon(Icons.arrow_drop_down),
+                  onChanged: (newValue) {
+                    setState(() {
+                      selectedRemTypeDropDownValue = '${newValue}';
+                    });
+                  },
+                  items: <String>['MEDICINE', 'ACTIVITY']
+                      .map<DropdownMenuItem<String>>((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(
+                        '${value}',
+                        style: TextStyle(fontSize: 17),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            )
+          ]),
+          SizedBox(height: 20,),
           Container(
             child: Column(
               children: [
@@ -316,6 +367,7 @@ class _CustomFormInputState extends State<CustomFormInput> {
                               var objectMap = {
                                 'title': title,
                                 'type': selectedDropDownValue,
+                                'remType': selectedRemTypeDropDownValue == 'MEDICINE' ? 0: 1,
                                 'startDate':
                                     startDate.toIso8601String().split('T')[0],
                                 'endDate':
@@ -358,22 +410,40 @@ class _CustomFormInputState extends State<CustomFormInput> {
                                               _selectedTime.minute));
                                   if (isBefore) {
                                     // create a one shot notification
+                                    if (selectedRemTypeDropDownValue == 'MEDICINE') {
+                                      await AndroidAlarmManager.oneShotAt(
+                                          DateTime(
+                                              now.year,
+                                              now.month,
+                                              now.day,
+                                              _selectedTime.hour,
+                                              _selectedTime.minute,
+                                              0),
+                                          525,
+                                          showNotificationForMedicine,
+                                          exact: true,
+                                          allowWhileIdle: true,
+                                          alarmClock: true,
+                                          wakeup: true,
+                                          rescheduleOnReboot: true);
+                                    } else {
+                                      await AndroidAlarmManager.oneShotAt(
+                                          DateTime(
+                                              now.year,
+                                              now.month,
+                                              now.day,
+                                              _selectedTime.hour,
+                                              _selectedTime.minute,
+                                              0),
+                                          526,
+                                          showNotificationForReminder,
+                                          exact: true,
+                                          allowWhileIdle: true,
+                                          alarmClock: true,
+                                          wakeup: true,
+                                          rescheduleOnReboot: true);
+                                    }
 
-                                    await AndroidAlarmManager.oneShotAt(
-                                        DateTime(
-                                            now.year,
-                                            now.month,
-                                            now.day,
-                                            _selectedTime.hour,
-                                            _selectedTime.minute,
-                                            0),
-                                        525,
-                                        showNotificationForMedicine,
-                                        exact: true,
-                                        allowWhileIdle: true,
-                                        alarmClock: true,
-                                        wakeup: true,
-                                        rescheduleOnReboot: true);
                                   }
                                 }
 

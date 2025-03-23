@@ -13,13 +13,14 @@ class NotificationsService {
   }
 
   void sendNotification(String title, String body,
-      {sound = const RawResourceAndroidNotificationSound('default_sound'),
+      {sound = const RawResourceAndroidNotificationSound('medicine_reminder'),
       String id = 'id',
       String name = 'name'}) async {
     AndroidNotificationDetails androidNotificationDetails =
         AndroidNotificationDetails(id, name,
             importance: Importance.max,
             priority: Priority.high,
+            sound: sound,
             playSound: true);
     NotificationDetails notificationDetails =
         NotificationDetails(android: androidNotificationDetails);

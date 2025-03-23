@@ -2,8 +2,18 @@ import 'package:dashboard_screen/main.dart';
 import 'package:flutter/material.dart';
 import 'package:dashboard_screen/pages/LoginPage.dart';
 import 'package:dashboard_screen/utils/global_variables.dart';
+import 'package:contacts_service/contacts_service.dart';
+import 'package:dashboard_screen/utils/global_variables.dart';
 
-class AccountInformationPage extends StatelessWidget {
+class AccountInformationPage extends StatefulWidget {
+  @override
+  State<AccountInformationPage> createState() => _AccountInformationPageState();
+}
+
+String? _name = GlobalVariables().userData['emergency_contact_name'];
+String? _num = GlobalVariables().userData['emergency_contact_number'];
+
+class _AccountInformationPageState extends State<AccountInformationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,6 +79,8 @@ class AccountInformationPage extends StatelessWidget {
               "${GlobalVariables().userData['date_of_birth']}"),
           _buildInfoTile(
               'Phone Number', "${GlobalVariables().userData['mobile']}"),
+    _buildInfoButtonTile(
+        'Emergency Contact', (_name == null || _num == null) ? "Not Yet Added": "${_name!.length > 15 ? "${_name!.substring(0, 14)}..": _name}  ${_num}"),
           SizedBox(
             height: 25,
           ),
@@ -121,6 +133,53 @@ class AccountInformationPage extends StatelessWidget {
             fontSize: 14,
             color: Colors.black87,
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoButtonTile(String title, String value) {
+    return Card(
+      elevation: 2,
+      margin: const EdgeInsets.only(bottom: 16),
+      child: ListTile(
+        title: Text(
+          title,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF143055),
+          ),
+        ),
+        subtitle: Text(
+          value,
+          style: const TextStyle(
+            fontSize: 14,
+            color: Colors.black87,
+          ),
+        ),
+        trailing: IconButton(
+          icon: Icon(Icons.contacts),
+          onPressed: () async {
+            Map? contact = await dbHelper.selectContact();
+            if(contact != null) {
+              String name = contact['name'];
+              String num = contact['phoneNumber'].replaceAll(RegExp(r'[^0-9]'), '');
+              if(name != '' && num != '') {
+                int r = await dbHelper.updateEmergencyContact(name, num, GlobalVariables().userId);
+                if (r==1) {
+                  setState(() {
+                    _name = name;
+                    _num = num;
+                    GlobalVariables().userData['emergency_contact_name'] = name;
+                    GlobalVariables().userData['emergency_contact_number'] = num;
+                  });
+                }
+              }
+            } else {
+              print("Returned null contact");
+            }
+          },
         ),
       ),
     );
