@@ -1,16 +1,15 @@
 # geriatricplus
 
-A new Flutter application.
+GeriatricPlus – Your One-Stop Solution for Old Age Care
 
-## Getting Started
+GeriatricPlus is a thoughtfully designed Flutter application aimed at improving the quality of life for the elderly by offering a comprehensive digital care system. Built using Flutter and Dart, and backed by a SQLite local database, the app integrates several powerful Flutter packages including local_notifications, geolocator, and sms to deliver a seamless and user-friendly experience.
 
-This project is a starting point for a Flutter application.
+Key features include:
 
-A few resources to get you started if this is your first Flutter project:
+Timely Medicine Reminders: Audio and text-based notifications ensure users never miss a dose.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Activity Reminders: Personalized reminders for essential daily activities like eating, sleeping, and exercising.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Emergency Alert System: With a single tap, users can instantly send their current location and an emergency message via SMS to a pre-defined emergency contact—providing quick access to help when needed.
+
+GeriatricPlus focuses on safety, independence, and well-being, making it an essential digital companion for senior citizens and their caregivers.
